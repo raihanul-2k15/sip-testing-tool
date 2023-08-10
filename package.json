@@ -1,0 +1,25 @@
+{
+  "name": "trunk",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "jssip": "^3.10.0",
+    "mitt": "^3.0.1",
+    "pinia": "^2.1.4",
+    "pinia-plugin-persistedstate": "^3.1.0",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.0",
+    "vite-plugin-singlefile": "^0.13.5",
+    "vue-tsc": "^1.8.3"
+  }
+}
