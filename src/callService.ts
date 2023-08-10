@@ -7,6 +7,7 @@ interface ConnectConfig {
     username: string;
     password: string;
     headerKV: string;
+    extension: string
 }
 
 /**
@@ -22,12 +23,14 @@ export default class CallService {
         registrationFailed: any;
     }> = mitt();
 
+    private extension: string = "";
     private phone: UA | null = null;
     private options = {
         mediaConstraints: { audio: true, video: false },
     };
 
     public init(config: ConnectConfig) {
+        this.extension = config.extension;
         this.phone = new UA(this.getSipConfiguration(config));
         this.phone.on('connected', this.connectedHandler);
         this.phone.on('disconnected', this.disconnectedHandler);
@@ -47,7 +50,8 @@ export default class CallService {
     }
 
     public newCall(number: string) {
-        this.phone?.call('sip:12121212121', {
+        console.log("extension: "+this.extension);
+        this.phone?.call('sip:'+this.extension, {
             ...this.options,
             fromUserName: number,
         });
