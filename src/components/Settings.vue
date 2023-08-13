@@ -32,11 +32,11 @@ const settings = useSettingsStore();
             </div>
             <div class="form-group">
                 <label for="">SIP HeaderKV</label>
-                <input type="text" v-model="settings.sipHeaderKV"/>
+                <input type="text" v-model="settings.sipHeaderKV" />
             </div>
             <div class="form-group">
                 <label for="">Extension (s|echo)</label>
-                <input type="text" v-model="settings.sipExtension"/>
+                <input type="text" v-model="settings.sipExtension" />
             </div>
             <hr />
 

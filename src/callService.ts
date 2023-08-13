@@ -7,7 +7,7 @@ interface ConnectConfig {
     username: string;
     password: string;
     headerKV: string;
-    extension: string
+    extension: string;
 }
 
 /**
@@ -23,7 +23,7 @@ export default class CallService {
         registrationFailed: any;
     }> = mitt();
 
-    private extension: string = "";
+    private extension: string = '';
     private phone: UA | null = null;
     private options = {
         mediaConstraints: { audio: true, video: false },
@@ -50,8 +50,7 @@ export default class CallService {
     }
 
     public newCall(number: string) {
-        console.log("extension: "+this.extension);
-        this.phone?.call('sip:'+this.extension, {
+        this.phone?.call('sip:' + this.extension, {
             ...this.options,
             fromUserName: number,
         });

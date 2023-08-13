@@ -7,7 +7,7 @@ export const useSettingsStore = defineStore('settings', {
 
         sipUsername: 'test-trunk-wss',
         sipPassword: 'aaaaaa',
-        sipHeaderKV: 'TEST_TRUNK_ENDPOINT:true',
+        sipHeaderKV: 'TEST_TRUNK_ENDPOINT: true',
         sipExtension: 's',
 
         sessionInitialAudioVolume: 50.0,
