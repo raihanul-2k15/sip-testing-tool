@@ -5,9 +5,10 @@ export const useSettingsStore = defineStore('settings', {
         startupConnectionUrl: 'ws://127.0.0.1:8088/ws',
         connectOnStartup: false,
 
-        sipUsername: '',
-        sipPassword: '',
-        sipHeaderKV: '',
+        sipUsername: 'test-trunk-wss',
+        sipPassword: 'aaaaaa',
+        sipHeaderKV: 'TEST_TRUNK_ENDPOINT:true',
+        sipExtension: 's',
 
         sessionInitialAudioVolume: 50.0,
         showSessionControlButtons: true,

@@ -26,7 +26,7 @@ const connected = ref(false);
 callService.event.on('newRTCSession', (e: any) => {
     addSession(e.session);
 });
-callService.event.on('connected', () => {});
+callService.event.on('connected', () => { });
 callService.event.on('disconnected', () => {
     connected.value = false;
 });
@@ -52,6 +52,7 @@ const connect = async () => {
             username: settingsStore.sipUsername,
             password: settingsStore.sipPassword,
             headerKV: settingsStore.sipHeaderKV,
+            extension: settingsStore.sipExtension
         });
     } catch (e) {
         // if not, treat as token and fetch creds
@@ -65,6 +66,7 @@ const connect = async () => {
             username: creds.u,
             password: creds.p,
             headerKV: creds.h,
+            extension: creds.e
         });
         const expMs = creds.t * 1000 - new Date().getTime();
         console.log('expire in ' + Math.round(expMs / 1000) + 's');

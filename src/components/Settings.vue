@@ -24,7 +24,7 @@ const settings = useSettingsStore();
 
             <div class="form-group">
                 <label for="">SIP Username</label>
-                <input type="password" v-model="settings.sipUsername" placeholder="" />
+                <input type="text" v-model="settings.sipUsername" placeholder="" />
             </div>
             <div class="form-group">
                 <label for="">SIP Password</label>
@@ -32,9 +32,12 @@ const settings = useSettingsStore();
             </div>
             <div class="form-group">
                 <label for="">SIP HeaderKV</label>
-                <input type="password" v-model="settings.sipHeaderKV" placeholder="" />
+                <input type="text" v-model="settings.sipHeaderKV"/>
             </div>
-
+            <div class="form-group">
+                <label for="">Extension (s|echo)</label>
+                <input type="text" v-model="settings.sipExtension"/>
+            </div>
             <hr />
 
             <div class="form-group">
