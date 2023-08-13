@@ -106,19 +106,19 @@ const toggleMute = () => {
 const toggleHold = () => {
     if (session.isOnHold().local) {
         session.unhold({}, () => {
-            onHold.value = false;
+            onHold.value = session.isOnHold().local;
         });
     } else {
         session.hold({}, () => {
-            onHold.value = true;
+            onHold.value = session.isOnHold().local;
         });
     }
 };
 
 const sendDTMF = (num: string) => {
-    try {
+    if (state.value === 'C') {
         session.sendDTMF(num);
-    } catch (e) {}
+    }
 };
 
 const deleteSelf = () => {
