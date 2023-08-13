@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RTCSession } from 'jssip/lib/RTCSession';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { initVisualizer } from '../visualize';
 import { getSessionById } from '../callSessionStore';
 import { C } from 'jssip';
@@ -157,6 +157,12 @@ const audioStream = () => {
 watch(volume, (val: number) => {
     if (audio.value) {
         audio.value.volume = Math.max(0, Math.min(1, val / 100));
+    }
+});
+
+onMounted(() => {
+    if (session.direction === 'outgoing') {
+        focusIt();
     }
 });
 
