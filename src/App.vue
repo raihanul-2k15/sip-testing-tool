@@ -20,7 +20,7 @@ const settingsClick = () => {
 const settingsStore = useSettingsStore();
 
 const callService = new CallService();
-const url = ref(settingsStore.startupConnectionUrl);
+const url = ref(settingsStore.connectionUrl);
 const number = ref('01712345678');
 const connected = ref(false);
 callService.event.on('newRTCSession', (e: any) => {

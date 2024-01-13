@@ -10,9 +10,6 @@ interface ConnectConfig {
     extension: string;
 }
 
-/**
- * Handle Call Related Functionalities
- */
 export default class CallService {
     public event: Emitter<{
         newRTCSession: any;
@@ -30,6 +27,7 @@ export default class CallService {
     };
 
     public init(config: ConnectConfig) {
+        this.end();
         this.extension = config.extension;
         this.phone = new UA(this.getSipConfiguration(config));
         this.phone.on('connected', this.connectedHandler);
