@@ -7,7 +7,7 @@ export interface Profile {
     sipExtension: string;
 }
 
-export const isSameProfile = (p1, p2) => {
+export const isSameProfile = (p1: Partial<Profile>, p2: Partial<Profile>) => {
     return (
         p1.connectionUrl == p2.connectionUrl &&
         p1.sipUsername == p2.sipUsername &&
