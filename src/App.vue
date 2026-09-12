@@ -40,13 +40,9 @@ callService.event.on('registrationFailed', () => {
     connected.value = false;
 });
 
-let disconnectTimeout: any = null;
-const connect = async () => {
+const connect = () => {
     callService.end();
-    clearTimeout(disconnectTimeout);
     try {
-        // try as url first
-        new URL(url.value);
         callService.init({
             wsConUrl: url.value,
             username: settingsStore.sipUsername,
@@ -54,29 +50,12 @@ const connect = async () => {
             emulatedSipTrunk: settingsStore.emulatedSipTrunk,
         });
     } catch (e) {
-        // if not, treat as token and fetch creds
-        const res = await fetch(import.meta.env.VITE_SIP_CRED_URL + '?' + new URLSearchParams({ token: url.value }));
-        const json = await res.json();
-        const decoded = atob(json['credentials']);
-        const creds = JSON.parse(decoded);
-        url.value = creds.w;
-        callService.init({
-            wsConUrl: creds.w,
-            username: creds.u,
-            password: creds.p,
-            emulatedSipTrunk: settingsStore.emulatedSipTrunk,
-        });
-        const expMs = creds.t * 1000 - new Date().getTime();
-        console.log('expire in ' + Math.round(expMs / 1000) + 's');
-        disconnectTimeout = setTimeout(() => {
-            disconnect();
-        }, expMs);
+        alert('Invalid connection URL');
     }
 };
 
 const disconnect = () => {
     callService.end();
-    clearTimeout(disconnectTimeout);
 };
 
 const call = () => {

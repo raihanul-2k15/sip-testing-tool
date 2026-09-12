@@ -8,9 +8,8 @@ setitem
 
             <p>How to use</p>
             <ul>
-                <li>Obtain a token for temporary use</li>
-                <li>Or configure username, password and header in Settings for permanent use</li>
-                <li>Use token or URL to connect to server</li>
+                <li>Configure username, password and emulated SIP trunk in Settings</li>
+                <li>Use URL to connect to server</li>
                 <li>Make multiple simultaneous calls</li>
                 <li>Highlight a session by clicking on it</li>
                 <li>Perform actions on session by keyboard shortcuts</li>
