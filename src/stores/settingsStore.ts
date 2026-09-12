@@ -9,7 +9,7 @@ export const useSettingsStore = defineStore('settings', {
         sipPassword: 'aaaaaa',
         emulatedSipTrunk: '09611111111',
 
-        sessionInitialAudioVolume: 50.0,
+        sessionInitialAudioVolume: 100.0,
         showSessionControlButtons: true,
 
         incrementNumberAfterCall: false,
