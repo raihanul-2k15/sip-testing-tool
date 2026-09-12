@@ -6,8 +6,7 @@ interface ConnectConfig {
     wsConUrl: string;
     username: string;
     password: string;
-    headerKV: string;
-    extension: string;
+    emulatedSipTrunk: string;
 }
 
 export default class CallService {
@@ -20,7 +19,6 @@ export default class CallService {
         registrationFailed: any;
     }> = mitt();
 
-    private extension: string = '';
     private phone: UA | null = null;
     private options = {
         mediaConstraints: { audio: true, video: false },
@@ -28,7 +26,6 @@ export default class CallService {
 
     public init(config: ConnectConfig) {
         this.end();
-        this.extension = config.extension;
         this.phone = new UA(this.getSipConfiguration(config));
         this.phone.on('connected', this.connectedHandler);
         this.phone.on('disconnected', this.disconnectedHandler);
@@ -93,10 +90,7 @@ export default class CallService {
             register: true,
             // @ts-ignore
             stun_servers: ['stun:stun.l.google.com:19302', 'stun:stun4.l.google.com:19302'],
-            extra_headers: [
-                // config.headerKV,
-                'X-TRUNK-TEST: 09611111111',
-            ],
+            extra_headers: ['X-TRUNK-TEST: ' + config.emulatedSipTrunk],
         };
     };
 }

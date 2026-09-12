@@ -51,8 +51,7 @@ const connect = async () => {
             wsConUrl: url.value,
             username: settingsStore.sipUsername,
             password: settingsStore.sipPassword,
-            headerKV: settingsStore.sipHeaderKV,
-            extension: settingsStore.sipExtension,
+            emulatedSipTrunk: settingsStore.emulatedSipTrunk,
         });
     } catch (e) {
         // if not, treat as token and fetch creds
@@ -65,8 +64,7 @@ const connect = async () => {
             wsConUrl: creds.w,
             username: creds.u,
             password: creds.p,
-            headerKV: creds.h,
-            extension: creds.e,
+            emulatedSipTrunk: settingsStore.emulatedSipTrunk,
         });
         const expMs = creds.t * 1000 - new Date().getTime();
         console.log('expire in ' + Math.round(expMs / 1000) + 's');

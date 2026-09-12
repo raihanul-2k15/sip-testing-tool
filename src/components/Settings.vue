@@ -18,21 +18,6 @@ const settings = useSettingsStore();
             <hr />
 
             <div class="form-group">
-                <label for="">Existing Profiles</label>
-                <select v-model="settings.currentProfileIndex">
-                    <option :value="null">None</option>
-                    <option v-for="(p, i) of settings.profiles" :value="i" :key="i">{{ p.name }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <div class="flex-with-gap">
-                    <button class="btn-blue" style="width: 100%" @click="settings.applyCurrentProfile">Apply</button>
-                </div>
-            </div>
-
-            <hr />
-
-            <div class="form-group">
                 <label for="">Connection URL</label>
                 <input type="text" v-model="settings.connectionUrl" placeholder="ws(s)://host:port/ws" />
             </div>
@@ -46,33 +31,9 @@ const settings = useSettingsStore();
                 <input type="password" v-model="settings.sipPassword" placeholder="" />
             </div>
             <div class="form-group">
-                <label for="">SIP HeaderKV</label>
-                <input type="text" v-model="settings.sipHeaderKV" />
+                <label for="">Emulated SIP Trunk</label>
+                <input type="text" v-model="settings.emulatedSipTrunk" placeholder="09611111111" />
             </div>
-            <div class="form-group">
-                <label for="">Extension (s|echo)</label>
-                <input type="text" v-model="settings.sipExtension" />
-            </div>
-            <div class="form-group">
-                <button class="btn-blue" @click="settings.saveCurrentProfile">Save As Profile</button>
-            </div>
-            <div class="form-group">
-                <button class="btn-green" style="width: 100%" @click="settings.importNewProfiles">
-                    Import New Profiles
-                </button>
-            </div>
-            <div class="form-group">
-                <button class="btn-green" style="width: 100%" @click="settings.exportAllProfiles">
-                    Export All Profiles
-                </button>
-            </div>
-            <div class="form-group">
-                <button class="btn-red" style="width: 100%" @click="settings.deleteCurrentProfile">
-                    Delete Selected Profile
-                </button>
-            </div>
-
-            <div class="form-group"></div>
 
             <hr />
 
@@ -117,12 +78,6 @@ const settings = useSettingsStore();
 </template>
 
 <style scoped>
-.flex-with-gap {
-    width: 100%;
-    display: flex;
-    gap: 0.5rem;
-}
-
 .side {
 }
 
