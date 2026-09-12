@@ -77,7 +77,7 @@ onMounted(() => {
         <div class="text-center">
             <div style="position: relative">
                 <button style="position: absolute; top: 0; left: 0" @click="instructionsClick">Instructions</button>
-                <h1>SIP Trunk Simulation</h1>
+                <h1>SIP Trunk Emulator</h1>
                 <button style="position: absolute; top: 0; right: 0" @click="settingsClick">Settings</button>
             </div>
             <hr />
