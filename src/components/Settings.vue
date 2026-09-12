@@ -1,13 +1,30 @@
 <script setup lang="ts">
-import { useSettingsStore } from '../stores/settingsStore';
+import { ref } from 'vue';
+import { MAX_TRUNKS, useSettingsStore } from '../stores/settingsStore';
 
 const settings = useSettingsStore();
+
+const newTrunk = ref('');
+const addTrunk = () => {
+    if (settings.addTrunk(newTrunk.value)) newTrunk.value = '';
+};
+const renameTrunk = (index: number, e: Event) => {
+    const input = e.target as HTMLInputElement;
+    settings.renameTrunk(index, input.value);
+    // show the stored value, reverting empty edits
+    input.value = settings.trunks[index].number;
+};
 </script>
 
 <template>
     <div class="side">
-        <div>
+        <div class="panel-header">
             <h3>Settings</h3>
+            <button class="panel-toggle" @click="settings.settingsVisible = !settings.settingsVisible">
+                {{ settings.settingsVisible ? 'Hide' : 'Show' }}
+            </button>
+        </div>
+        <div v-show="settings.settingsVisible">
 
             <hr />
             <div class="form-check">
@@ -30,9 +47,39 @@ const settings = useSettingsStore();
                 <label for="">SIP Password</label>
                 <input type="password" v-model="settings.sipPassword" placeholder="" />
             </div>
+
+            <hr />
+
             <div class="form-group">
-                <label for="">Emulated SIP Trunk</label>
-                <input type="text" v-model="settings.emulatedSipTrunk" placeholder="09611111111" />
+                <label for="">Outgoing Trunks ({{ settings.trunks.length }}/{{ MAX_TRUNKS }})</label>
+                <div v-for="(t, i) of settings.trunks" :key="i" class="trunk-row">
+                    <span
+                        class="trunk-swatch"
+                        :style="{ backgroundColor: t.color }"
+                        title="Click for another color"
+                        @click="settings.recolorTrunk(i)"
+                    ></span>
+                    <input class="trunk-input" type="text" :value="t.number" @change="renameTrunk(i, $event)" />
+                    <button
+                        class="btn-red"
+                        :disabled="settings.trunks.length <= 1"
+                        @click="settings.removeTrunk(i)"
+                    >
+                        X
+                    </button>
+                </div>
+                <div class="trunk-row">
+                    <input
+                        class="trunk-input"
+                        type="text"
+                        v-model.trim="newTrunk"
+                        placeholder="00000000000"
+                        @keydown.enter="addTrunk"
+                    />
+                    <button class="btn-green" :disabled="settings.trunks.length >= MAX_TRUNKS" @click="addTrunk">
+                        Add
+                    </button>
+                </div>
             </div>
 
             <hr />
@@ -102,6 +149,27 @@ const settings = useSettingsStore();
 .form-check {
     margin-bottom: 16px;
 }
+.trunk-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.trunk-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.6);
+}
+
+.trunk-input {
+    flex: 1;
+    min-width: 0;
+}
+
 .vol-input {
     width: 100%;
     margin: 0;

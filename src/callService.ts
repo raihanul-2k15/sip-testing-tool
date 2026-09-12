@@ -1,17 +1,19 @@
 import { UA, WebSocketInterface } from 'jssip';
-import { UAConfiguration } from 'jssip/lib/UA';
+import { RTCSession } from 'jssip/lib/RTCSession';
+import { RTCSessionEvent, UAConfiguration } from 'jssip/lib/UA';
 import mitt, { Emitter } from 'mitt';
 
 interface ConnectConfig {
     wsConUrl: string;
     username: string;
     password: string;
-    emulatedSipTrunk: string;
 }
+
+const TRUNK_HEADER = 'X-TRUNK-TEST';
 
 export default class CallService {
     public event: Emitter<{
-        newRTCSession: any;
+        newRTCSession: { session: RTCSession; trunk: string };
         connected: any;
         disconnected: any;
         registered: any;
@@ -20,6 +22,7 @@ export default class CallService {
     }> = mitt();
 
     private phone: UA | null = null;
+    private outgoingTrunk: string = '';
     private options = {
         mediaConstraints: { audio: true, video: false },
     };
@@ -44,16 +47,21 @@ export default class CallService {
         this.phone = null;
     }
 
-    public newCall(number: string) {
+    public newCall(number: string, trunk: string) {
+        // newRTCSession fires synchronously inside call(), so the handler can read this
+        this.outgoingTrunk = trunk;
         this.phone?.call('sip:' + number, {
             ...this.options,
+            extraHeaders: [TRUNK_HEADER + ': ' + trunk],
             // fromUserName: number,
         });
     }
 
-    public newRTCSessionHandler = async (e: any) => {
+    public newRTCSessionHandler = async (e: RTCSessionEvent) => {
         console.log('new rtc session handler called');
-        this.event.emit('newRTCSession', e);
+        const trunk =
+            e.session.direction === 'outgoing' ? this.outgoingTrunk : e.request.getHeader(TRUNK_HEADER) || '';
+        this.event.emit('newRTCSession', { session: e.session, trunk });
     };
 
     private connectedHandler = (e: any) => {
@@ -90,7 +98,6 @@ export default class CallService {
             register: true,
             // @ts-ignore
             stun_servers: ['stun:stun.l.google.com:19302', 'stun:stun4.l.google.com:19302'],
-            extra_headers: ['X-TRUNK-TEST: ' + config.emulatedSipTrunk],
         };
     };
 }

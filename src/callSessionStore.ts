@@ -6,14 +6,15 @@ let id = 0;
 interface SessionRecord {
     id: number;
     session: RTCSession;
+    trunk: string;
 }
 export const callSessionIds = ref<number[]>([]);
 const callSessions: SessionRecord[] = [];
 
-export const addSession = (session: RTCSession) => {
+export const addSession = (session: RTCSession, trunk: string) => {
     id++;
     callSessionIds.value.push(id);
-    callSessions.push({ id: id, session });
+    callSessions.push({ id: id, session, trunk });
     return id;
 };
 
@@ -23,6 +24,10 @@ export const getSessionById = (id: number): RTCSession | null => {
         return session.session;
     }
     return null;
+};
+
+export const getSessionTrunkById = (id: number): string => {
+    return callSessions.find((rec) => rec.id === id)?.trunk || '';
 };
 
 export const removeSessionById = (id: number) => {

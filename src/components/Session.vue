@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { RTCSession } from 'jssip/lib/RTCSession';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { initVisualizer } from '../visualize';
-import { getSessionById } from '../callSessionStore';
+import { getSessionById, getSessionTrunkById } from '../callSessionStore';
 import { C } from 'jssip';
 import { useSettingsStore } from '../stores/settingsStore';
 
@@ -19,6 +19,8 @@ const onMute = ref(false);
 const onHold = ref(false);
 
 const session = getSessionById(props.id) as RTCSession;
+const trunk = getSessionTrunkById(props.id);
+const trunkColor = computed(() => settingsStore.getTrunkColor(trunk) || 'gray');
 
 const updateDisplayedNumber = () => {
     number.value = session.remote_identity.uri.user;
@@ -194,15 +196,16 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="card" tabindex="0" ref="parentDiv" @click="focusIt" @keypress="handleKeyPress">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
             <p style="margin-right: 16px">{{ props.id }}</p>
 
-            <input
-                class="num-input"
-                type="text"
-                :value="number"
-                readonly
-            />
+            <div class="call-info">
+                <p class="trunk">
+                    <span class="trunk-swatch" :style="{ backgroundColor: trunkColor }"></span>
+                    {{ trunk || 'unknown trunk' }}
+                </p>
+                <p class="num">{{ number }}</p>
+            </div>
 
             <input
                 class="vol-input"
@@ -295,8 +298,32 @@ onBeforeUnmount(() => {
     outline: 2px solid cyan;
 }
 
-.num-input {
-    width: 96px;
+.call-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.num {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.trunk {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+.trunk-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.6);
 }
 
 .vol-input {

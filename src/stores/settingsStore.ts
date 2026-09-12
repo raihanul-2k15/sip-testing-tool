@@ -1,5 +1,32 @@
 import { defineStore } from 'pinia';
 
+export interface Trunk {
+    number: string;
+    color: string;
+}
+
+export const TRUNK_COLORS = [
+    '#e6194b', // red
+    '#3cb44b', // green
+    '#4363d8', // blue
+    '#f58231', // orange
+    '#ffe119', // yellow
+    '#ffffff', // white
+    '#f032e6', // pink
+    '#911eb4', // purple
+];
+export const MAX_TRUNKS = TRUNK_COLORS.length;
+export const DEFAULT_TRUNK = '00000000000';
+
+const randomRgbColor = () => '#' + Math.floor(Math.random() * 0x1000000).toString(16).padStart(6, '0');
+
+// falls back to a fully random color once the palette is used up
+const pickUnusedColor = (trunks: Trunk[]) => {
+    const unused = TRUNK_COLORS.filter((c) => !trunks.some((t) => t.color === c));
+    if (unused.length === 0) return randomRgbColor();
+    return unused[Math.floor(Math.random() * unused.length)];
+};
+
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         connectOnStartup: false,
@@ -7,10 +34,15 @@ export const useSettingsStore = defineStore('settings', {
         connectionUrl: 'ws://127.0.0.1:8088/ws',
         sipUsername: 'trunk-emulator',
         sipPassword: 'aaaaaa',
-        emulatedSipTrunk: '09611111111',
+
+        trunks: [{ number: DEFAULT_TRUNK, color: pickUnusedColor([]) }] as Trunk[],
+        selectedTrunk: DEFAULT_TRUNK,
 
         sessionInitialAudioVolume: 100.0,
         showSessionControlButtons: true,
+
+        instructionsVisible: true,
+        settingsVisible: true,
 
         incrementNumberAfterCall: false,
         numberToIncrementBy: 111,
@@ -31,6 +63,9 @@ export const useSettingsStore = defineStore('settings', {
         } as { [key: string]: string },
     }),
     getters: {
+        getTrunkColor: (state) => (number: string) => {
+            return state.trunks.find((t) => t.number === number)?.color;
+        },
         getStateColor: (state) => (stateName: string) => {
             return state.sessionStateColor[stateName] || 'black';
         },
@@ -59,6 +94,34 @@ export const useSettingsStore = defineStore('settings', {
         },
     },
     actions: {
+        // incoming calls pass ignoreLimit so their trunk is always added
+        addTrunk(number: string, ignoreLimit = false) {
+            number = number.trim();
+            if (!number || (!ignoreLimit && this.trunks.length >= MAX_TRUNKS)) return false;
+            if (this.trunks.some((t) => t.number === number)) return false;
+            this.trunks.push({ number, color: pickUnusedColor(this.trunks) });
+            return true;
+        },
+        renameTrunk(index: number, number: string) {
+            number = number.trim();
+            const trunk = this.trunks[index];
+            if (!trunk || !number) return false;
+            if (this.selectedTrunk === trunk.number) this.selectedTrunk = number;
+            trunk.number = number;
+            return true;
+        },
+        recolorTrunk(index: number) {
+            const trunk = this.trunks[index];
+            // excludes this trunk's own color too, so it always changes
+            if (trunk) trunk.color = pickUnusedColor(this.trunks);
+        },
+        removeTrunk(index: number) {
+            if (this.trunks.length <= 1) return;
+            this.trunks.splice(index, 1);
+            if (!this.trunks.some((t) => t.number === this.selectedTrunk)) {
+                this.selectedTrunk = this.trunks[0].number;
+            }
+        },
         resetToDefaults() {
             if (!confirm('Reset all settings to defaults?')) return;
             this.$reset();

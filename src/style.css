@@ -62,6 +62,17 @@ button:focus-visible {
     background-color: blue;
 }
 
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-toggle {
+    padding: 0.1em 0.5em;
+    font-size: 0.8em;
+}
+
 #app {
     width: 100%;
     display: grid;
