@@ -58,5 +58,11 @@ export const useSettingsStore = defineStore('settings', {
             return number;
         },
     },
+    actions: {
+        resetToDefaults() {
+            if (!confirm('Reset all settings to defaults?')) return;
+            this.$reset();
+        },
+    },
     persist: true,
 });

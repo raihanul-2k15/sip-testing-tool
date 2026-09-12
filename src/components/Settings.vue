@@ -73,6 +73,14 @@ const settings = useSettingsStore();
                 <label for="">Digit positions to randomize</label>
                 <input type="text" v-model="settings.digitPositionsToRandomize" placeholder="2,3,-2,-1" />
             </div>
+
+            <hr />
+
+            <div class="form-group">
+                <button class="btn-red" style="width: 100%" @click="settings.resetToDefaults">
+                    Reset All Settings To Defaults
+                </button>
+            </div>
         </div>
     </div>
 </template>
