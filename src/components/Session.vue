@@ -19,12 +19,18 @@ const onMute = ref(false);
 const onHold = ref(false);
 
 const session = getSessionById(props.id) as RTCSession;
+
+const updateDisplayedNumber = () => {
+    number.value = session.remote_identity.uri.user;
+};
+
 if (session.direction === 'incoming') {
     state.value = 'I';
-    number.value =
-        session.direction === 'incoming' ? session.remote_identity.uri.user : session.local_identity.uri.user;
+    updateDisplayedNumber();
 } else {
     state.value = 'O';
+    updateDisplayedNumber();
+
     session.connection.addEventListener('addstream', (e: any) => {
         console.log('local add stream');
         audio.value = audioStream();
@@ -33,20 +39,24 @@ if (session.direction === 'incoming') {
         audio.value.play();
     });
 }
+
 session.on('progress', (): any => {
     console.log('progress');
     state.value = 'P';
-    number.value =
-        session.direction === 'incoming' ? session.remote_identity.uri.user : session.local_identity.uri.user;
+    updateDisplayedNumber();
 });
+
 session.on('ended', () => {
     console.log('ended');
     state.value = 'E';
 });
+
 session.on('failed', (e: any) => {
     console.log('failed: ' + e.cause);
+
     const rejectedCauses = [C.causes.REJECTED, C.causes.CANCELED];
     const missedCauses = [C.causes.REQUEST_TIMEOUT, C.causes.NO_ANSWER, C.causes.BUSY];
+
     if (rejectedCauses.includes(e.cause)) {
         state.value = 'R';
     } else if (missedCauses.includes(e.cause)) {
@@ -55,20 +65,22 @@ session.on('failed', (e: any) => {
         state.value = 'F';
     }
 });
+
 session.on('accepted', () => {
     console.log('accepted');
     state.value = 'A';
-    number.value =
-        session.direction === 'incoming' ? session.remote_identity.uri.user : session.local_identity.uri.user;
+    updateDisplayedNumber();
 });
+
 session.on('confirmed', () => {
     console.log('confirmed');
     state.value = 'C';
-    number.value =
-        session.direction === 'incoming' ? session.remote_identity.uri.user : session.local_identity.uri.user;
+    updateDisplayedNumber();
 });
+
 session.on('peerconnection', (e: any) => {
     console.log('peerconnection');
+
     e.peerconnection.addEventListener('addstream', (e: any) => {
         console.log('remote add stream');
         audio.value = audioStream();
@@ -86,14 +98,21 @@ const parentDiv = ref();
 
 const answer = () => {
     try {
-        session.answer({ mediaConstraints: { audio: true, video: false } });
+        session.answer({
+            mediaConstraints: {
+                audio: true,
+                video: false,
+            },
+        });
     } catch (e) {}
 };
+
 const reject = () => {
     try {
         session.terminate();
     } catch (e) {}
 };
+
 const toggleMute = () => {
     if (session.isMuted().audio) {
         session.unmute({ audio: true });
@@ -103,6 +122,7 @@ const toggleMute = () => {
         onMute.value = true;
     }
 };
+
 const toggleHold = () => {
     if (session.isOnHold().local) {
         session.unhold({}, () => {
@@ -151,6 +171,7 @@ const handleKeyPress = (e: KeyboardEvent) => {
 const audioStream = () => {
     const audio = new Audio();
     audio.volume = Math.max(0, Math.min(1, volume.value / 100));
+
     return audio;
 };
 
@@ -175,28 +196,87 @@ onBeforeUnmount(() => {
     <div class="card" tabindex="0" ref="parentDiv" @click="focusIt" @keypress="handleKeyPress">
         <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
             <p style="margin-right: 16px">{{ props.id }}</p>
-            <input class="num-input" type="text" :value="number" readonly />
-            <input class="vol-input" type="range" min="0" max="100" v-model.number="volume" />
-            <canvas ref="vis" width="100" height="60"></canvas>
+
+            <input
+                class="num-input"
+                type="text"
+                :value="number"
+                readonly
+            />
+
+            <input
+                class="vol-input"
+                type="range"
+                min="0"
+                max="100"
+                v-model.number="volume"
+            />
+
+            <canvas
+                ref="vis"
+                width="100"
+                height="60"
+            ></canvas>
         </div>
-        <div v-if="settingsStore.showSessionControlButtons" style="display: flex; justify-content: space-between">
+
+        <div
+            v-if="settingsStore.showSessionControlButtons"
+            style="display: flex; justify-content: space-between"
+        >
             <div>
-                <button :style="{ 'background-color': settingsStore.getStateColor(state) }">{{ state }}</button>
-                <button class="btn-green" @click="answer">A</button>
-                <button class="btn-red" @click="reject">R</button>
+                <button :style="{ 'background-color': settingsStore.getStateColor(state) }">
+                    {{ state }}
+                </button>
+
+                <button class="btn-green" @click="answer">
+                    A
+                </button>
+
+                <button class="btn-red" @click="reject">
+                    R
+                </button>
             </div>
+
             <div>
-                <button :class="{ 'btn-red': onMute }" @click="toggleMute">{{ onMute ? 'U' : 'M' }}</button>
-                <button :class="{ 'btn-red': onHold }" @click="toggleHold">{{ onHold ? 'U' : 'H' }}</button>
+                <button
+                    :class="{ 'btn-red': onMute }"
+                    @click="toggleMute"
+                >
+                    {{ onMute ? 'U' : 'M' }}
+                </button>
+
+                <button
+                    :class="{ 'btn-red': onHold }"
+                    @click="toggleHold"
+                >
+                    {{ onHold ? 'U' : 'H' }}
+                </button>
             </div>
-            <button class="btn-red" style="margin-left: 8px" @click="deleteSelf">D</button>
+
+            <button
+                class="btn-red"
+                style="margin-left: 8px"
+                @click="deleteSelf"
+            >
+                D
+            </button>
         </div>
+
         <div v-else style="display: flex">
-            <button style="width: 100%" :style="{ 'background-color': settingsStore.getStateColor(state) }">
+            <button
+                style="width: 100%"
+                :style="{ 'background-color': settingsStore.getStateColor(state) }"
+            >
                 {{ state }}
             </button>
-            <button v-if="onMute" class="btn-red">M</button>
-            <button v-if="onHold" class="btn-red">H</button>
+
+            <button v-if="onMute" class="btn-red">
+                M
+            </button>
+
+            <button v-if="onHold" class="btn-red">
+                H
+            </button>
         </div>
     </div>
 </template>
@@ -204,7 +284,6 @@ onBeforeUnmount(() => {
 <style scoped>
 .card {
     padding: 16px;
-    /* place-items: center; */
     min-width: 96px;
 }
 

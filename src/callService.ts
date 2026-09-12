@@ -48,9 +48,9 @@ export default class CallService {
     }
 
     public newCall(number: string) {
-        this.phone?.call('sip:' + this.extension, {
+        this.phone?.call('sip:' + number, {
             ...this.options,
-            fromUserName: number,
+            // fromUserName: number,
         });
     }
 
@@ -93,7 +93,10 @@ export default class CallService {
             register: true,
             // @ts-ignore
             stun_servers: ['stun:stun.l.google.com:19302', 'stun:stun4.l.google.com:19302'],
-            extra_headers: [config.headerKV],
+            extra_headers: [
+                // config.headerKV,
+                'X-TRUNK-TEST: 09611111111',
+            ],
         };
     };
 }
