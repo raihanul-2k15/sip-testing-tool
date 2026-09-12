@@ -71,7 +71,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Instructions v-if="instructionsVisible" />
+    <Instructions v-if="instructionsVisible" class="panel-left" />
 
     <div class="main">
         <div class="text-center">
@@ -99,14 +99,27 @@ onMounted(() => {
         </div>
     </div>
 
-    <Settings v-if="settingsVisible" />
+    <Settings v-if="settingsVisible" class="panel-right" />
 </template>
 
 <style scoped>
 .main {
+    grid-column: 2;
     width: 800px;
     margin-right: 16px;
     margin-left: 16px;
+}
+
+.panel-left {
+    grid-column: 1;
+    justify-self: start;
+    padding-left: 16px;
+}
+
+.panel-right {
+    grid-column: 3;
+    justify-self: end;
+    padding-right: 16px;
 }
 
 .text-center {

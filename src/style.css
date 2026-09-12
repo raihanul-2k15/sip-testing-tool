@@ -64,8 +64,9 @@ button:focus-visible {
 
 #app {
     width: 100%;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
 }
 
 @media (prefers-color-scheme: light) {
