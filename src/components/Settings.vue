@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { MAX_TRUNKS, useSettingsStore } from '../stores/settingsStore';
+import { MAX_TRUNKS, TrunkType, useSettingsStore } from '../stores/settingsStore';
 
 const settings = useSettingsStore();
 
 const newTrunk = ref('');
+const newTrunkType = ref<TrunkType>('ip');
 const addTrunk = () => {
-    if (settings.addTrunk(newTrunk.value)) newTrunk.value = '';
+    if (settings.addTrunk(newTrunk.value, false, newTrunkType.value)) newTrunk.value = '';
 };
 const renameTrunk = (index: number, e: Event) => {
     const input = e.target as HTMLInputElement;
@@ -61,6 +62,14 @@ const renameTrunk = (index: number, e: Event) => {
                     ></span>
                     <input class="trunk-input" type="text" :value="t.number" @change="renameTrunk(i, $event)" />
                     <button
+                        class="trunk-type"
+                        :class="t.type === 'wa' ? 'btn-green' : 'btn-blue'"
+                        :title="t.type === 'wa' ? 'WhatsApp trunk' : 'IPTSP trunk'"
+                        @click="settings.toggleTrunkType(i)"
+                    >
+                        {{ t.type === 'wa' ? 'WA' : 'IP' }}
+                    </button>
+                    <button
                         class="btn-red"
                         :disabled="settings.trunks.length <= 1"
                         @click="settings.removeTrunk(i)"
@@ -76,6 +85,13 @@ const renameTrunk = (index: number, e: Event) => {
                         placeholder="00000000000"
                         @keydown.enter="addTrunk"
                     />
+                    <button
+                        class="trunk-type"
+                        :class="newTrunkType === 'wa' ? 'btn-green' : 'btn-blue'"
+                        @click="newTrunkType = newTrunkType === 'wa' ? 'ip' : 'wa'"
+                    >
+                        {{ newTrunkType === 'wa' ? 'WA' : 'IP' }}
+                    </button>
                     <button class="btn-green" :disabled="settings.trunks.length >= MAX_TRUNKS" @click="addTrunk">
                         Add
                     </button>
@@ -98,6 +114,7 @@ const renameTrunk = (index: number, e: Event) => {
                 <input type="checkbox" id="sscb" v-model="settings.showSessionControlButtons" />
                 <label for="sscb">Show session control buttons</label>
             </div>
+
 
             <hr />
 
@@ -163,6 +180,11 @@ const renameTrunk = (index: number, e: Event) => {
     flex-shrink: 0;
     cursor: pointer;
     box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.6);
+}
+
+.trunk-type {
+    width: 44px;
+    flex-shrink: 0;
 }
 
 .trunk-input {

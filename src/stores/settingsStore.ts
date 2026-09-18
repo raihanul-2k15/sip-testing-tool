@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia';
 
+// iptsp or whatsapp trunk
+export type TrunkType = 'ip' | 'wa';
+
 export interface Trunk {
     number: string;
     color: string;
+    type: TrunkType;
 }
 
 export const TRUNK_COLORS = [
@@ -35,7 +39,7 @@ export const useSettingsStore = defineStore('settings', {
         sipUsername: 'trunk-emulator',
         sipPassword: 'aaaaaa',
 
-        trunks: [{ number: DEFAULT_TRUNK, color: pickUnusedColor([]) }] as Trunk[],
+        trunks: [{ number: DEFAULT_TRUNK, color: pickUnusedColor([]), type: 'ip' }] as Trunk[],
         selectedTrunk: DEFAULT_TRUNK,
 
         sessionInitialAudioVolume: 100.0,
@@ -95,12 +99,16 @@ export const useSettingsStore = defineStore('settings', {
     },
     actions: {
         // incoming calls pass ignoreLimit so their trunk is always added
-        addTrunk(number: string, ignoreLimit = false) {
+        addTrunk(number: string, ignoreLimit = false, type: TrunkType = 'ip') {
             number = number.trim();
             if (!number || (!ignoreLimit && this.trunks.length >= MAX_TRUNKS)) return false;
             if (this.trunks.some((t) => t.number === number)) return false;
-            this.trunks.push({ number, color: pickUnusedColor(this.trunks) });
+            this.trunks.push({ number, color: pickUnusedColor(this.trunks), type });
             return true;
+        },
+        toggleTrunkType(index: number) {
+            const trunk = this.trunks[index];
+            if (trunk) trunk.type = trunk.type === 'wa' ? 'ip' : 'wa';
         },
         renameTrunk(index: number, number: string) {
             number = number.trim();
@@ -127,5 +135,12 @@ export const useSettingsStore = defineStore('settings', {
             this.$reset();
         },
     },
-    persist: true,
+    persist: {
+        // trunks saved before the type attribute existed default to ip
+        afterRestore: (ctx) => {
+            ctx.store.trunks.forEach((t: Trunk) => {
+                if (t.type !== 'wa') t.type = 'ip';
+            });
+        },
+    },
 });
